@@ -4,7 +4,7 @@ import type { Job } from '../../types';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Card } from '../ui/Card';
 import { PreviewModal } from '../ui/PreviewModal';
-import { FilePreview, FullFilePreview } from '../ui/FilePreview';
+import { FullFilePreview } from '../ui/FilePreview';
 import { Buckslip, LetterReply, Envelope, SequenceDot } from '../ui/ProofingVisuals';
 
 interface CampaignModalProps {
@@ -445,15 +445,13 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                                     transform: step === 2
                                       ? 'translateX(-50px) translateY(0px) scale(2.8)' // Show full size - much larger and centered
                                       : step >= 3 && step < 4
-                                      ? 'translateX(0) translateY(-30px) scale(2.0)' // Folded and inserted
+                                      ? 'translateX(0) translateY(-30px) scale(2.0, 0.66)' // Folded and inserted
                                       : 'translateX(-200px) translateY(-30px) scale(1.0)', // Hidden to left
-                                    // Height: full at step 2, then fold to 1/3 at step 3
-                                    scaleY: step === 2 ? 1 : step >= 3 ? 0.33 : 1,
                                     opacity: step >= 4 ? 0 : (step >= 1 ? 1 : 0),
                                     transition: 'all 1200ms ease-out',
                                     transformOrigin: 'center center',
                                     zIndex: 50
-                                  }}
+                                  } as React.CSSProperties}
                                 >
                                   <LetterReply
                                     folded={step >= 3}

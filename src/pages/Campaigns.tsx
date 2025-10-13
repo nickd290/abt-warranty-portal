@@ -3,7 +3,7 @@ import { useJobStore } from '../store/useJobStore';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { CampaignModal } from '../components/campaigns/CampaignModal';
 import { NewCampaignModal } from '../components/campaigns/NewCampaignModal';
-import { Plus, Calendar, Package } from 'lucide-react';
+import { Plus, Package } from 'lucide-react';
 import type { Job } from '../types';
 
 export function Campaigns() {

@@ -146,7 +146,7 @@ interface EnvelopeProps {
   recipientAddress?: string;
 }
 
-export function Envelope({ open = true, onClick, children, hasInserts = false, recipientName, recipientAddress }: EnvelopeProps) {
+export function Envelope({ onClick, children, recipientName, recipientAddress }: EnvelopeProps) {
   // #10 Envelope - Full-screen focal point using actual ABT envelope artwork
   // Specs: #10 on 24# White Wove 4/0
   return (
@@ -162,7 +162,7 @@ export function Envelope({ open = true, onClick, children, hasInserts = false, r
           src="/ABT-No10.png"
           alt="#10 Envelope"
           className="w-full h-full object-contain"
-          onError={(e) => {
+          onError={() => {
             console.error('Failed to load envelope image: /ABT-No10.png');
           }}
           onLoad={() => console.log('Loaded envelope image: /ABT-No10.png')}
