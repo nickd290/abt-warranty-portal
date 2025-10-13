@@ -4,6 +4,7 @@ import { useJobStore } from '../store/useJobStore';
 import { Card } from '../components/ui/Card';
 import { Chip } from '../components/ui/Chip';
 import { PreviewModal } from '../components/ui/PreviewModal';
+import { FullFilePreview } from '../components/ui/FilePreview';
 import {
   Buckslip,
   LetterReply,
@@ -38,11 +39,11 @@ export function Proofing() {
 
   const steps = useMemo(
     () => [
-      { key: 'bs1', label: 'Buckslip 1' },
-      { key: 'bs2', label: 'Buckslip 2' },
-      { key: 'bs3', label: 'Buckslip 3' },
-      { key: 'letter', label: 'Letter' },
-      { key: 'envelope', label: 'Outer Envelope' },
+      { key: 'start', label: 'Start Position' },
+      { key: 'buckslips', label: 'Insert Buckslips' },
+      { key: 'letter', label: 'Insert Letter' },
+      { key: 'seal', label: 'Seal Envelope' },
+      { key: 'ready', label: 'Ready to Mail' },
     ],
     []
   );
@@ -65,10 +66,10 @@ export function Proofing() {
     return (
       <div className="mx-auto max-w-7xl px-6 py-10">
         <Card className="p-12 text-center">
-          <p className="text-white/70">Job not found</p>
+          <p className="text-lg text-white/70">Job not found</p>
           <button
             onClick={() => navigate('/')}
-            className="mt-4 text-sky-400 hover:text-sky-300"
+            className="mt-4 text-base text-sky-400 hover:text-sky-300"
           >
             Return to Dashboard
           </button>
@@ -86,7 +87,7 @@ export function Proofing() {
             <h1 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
               Proofing Room
             </h1>
-            <p className="mt-2 text-white/60">
+            <p className="mt-2 text-lg text-white/60">
               {job.campaignName} • {job.month} {job.year}
             </p>
           </div>
@@ -97,10 +98,10 @@ export function Proofing() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sample Letters Sidebar */}
         <Card className="p-6 lg:col-span-1">
-          <h3 className="text-sm font-semibold text-white mb-2">
+          <h3 className="text-base font-semibold text-white mb-2">
             Sample Letter Replies
           </h3>
-          <p className="text-xs text-white/50 mb-4">
+          <p className="text-sm text-white/50 mb-4">
             10 personalized samples from mail list
           </p>
 
@@ -111,20 +112,20 @@ export function Proofing() {
                 onClick={() => setSelectedSample(idx)}
                 className={`w-full text-left rounded-xl border p-3 transition-colors ${
                   selectedSample === idx
-                    ? 'border-sky-400/50 bg-sky-500/10'
+                    ? 'border-slate-500/50 bg-slate-600/20'
                     : 'border-white/10 bg-white/5 hover:border-white/20'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-base font-medium text-white">
                     {sample.name}
                   </span>
                   {selectedSample === idx && (
-                    <Check className="h-3 w-3 text-sky-400" />
+                    <Check className="h-4 w-4 text-slate-300" />
                   )}
                 </div>
-                <p className="text-xs text-white/50 mt-1">{sample.recipient}</p>
-                <p className="text-xs text-white/40">{sample.address}</p>
+                <p className="text-sm text-white/50 mt-1">{sample.recipient}</p>
+                <p className="text-sm text-white/40">{sample.address}</p>
               </button>
             ))}
           </div>
@@ -139,78 +140,212 @@ export function Proofing() {
                 <h2 className="text-xl font-semibold text-white">
                   Interactive Inserting Sequence
                 </h2>
-                <p className="text-white/60 mt-1">
+                <p className="text-lg text-white/60 mt-1">
                   Step {step + 1} of {steps.length}: {steps[step].label}
                 </p>
               </div>
             </div>
 
-            {/* Visual Sequence */}
-            <div className="relative h-[350px] rounded-3xl bg-black/20 ring-1 ring-white/10 flex items-center justify-center overflow-hidden mb-6">
-              <div className="absolute inset-0 bg-[radial-gradient(700px_200px_at_50%_110%,rgba(56,189,248,0.12),transparent_60%)]" />
+            {/* Visual Sequence - Centered Envelope with Queue on Left */}
+            <div className="relative h-[400px] rounded-3xl bg-gradient-to-br from-slate-50 to-gray-100 ring-1 ring-gray-200 overflow-hidden mb-6">
 
-              {/* Stacked items */}
-              <div className="relative flex flex-col gap-4">
-                <div
-                  className={`transition-all duration-700 ${
-                    step >= 0 ? 'translate-x-0 opacity-100' : '-translate-x-16 opacity-0'
-                  } ${step >= 4 ? 'translate-x-32 scale-75 opacity-50' : ''}`}
-                >
-                  <Buckslip
-                    idx={0}
-                    title="Buckslip A (8.5×3.5)"
-                    onClick={() =>
-                      setPreviewModal({ isOpen: true, type: 'buckslip', idx: 0 })
-                    }
-                  />
+              {/* Status Indicator - shows during insertion */}
+              {step >= 1 && step < 4 && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 animate-in fade-in slide-in-from-top duration-500">
+                  <div className="bg-slate-700/90 text-white text-base font-semibold px-6 py-2 rounded-full shadow-lg">
+                    {step === 1 ? 'Inserting Buckslips...' : step === 2 ? 'Inserting Letter...' : 'Sealing Envelope...'}
+                  </div>
                 </div>
-                <div
-                  className={`transition-all duration-700 delay-75 ${
-                    step >= 1 ? 'translate-x-0 opacity-100' : '-translate-x-16 opacity-0'
-                  } ${step >= 4 ? 'translate-x-32 scale-75 opacity-50' : ''}`}
-                >
-                  <Buckslip
-                    idx={1}
-                    title="Buckslip B (8.5×3.5)"
-                    onClick={() =>
-                      setPreviewModal({ isOpen: true, type: 'buckslip', idx: 1 })
-                    }
-                  />
-                </div>
-                <div
-                  className={`transition-all duration-700 delay-150 ${
-                    step >= 2 ? 'translate-x-0 opacity-100' : '-translate-x-16 opacity-0'
-                  } ${step >= 4 ? 'translate-x-32 scale-75 opacity-50' : ''}`}
-                >
-                  <Buckslip
-                    idx={2}
-                    title="Buckslip C (8.5×3.5)"
-                    onClick={() =>
-                      setPreviewModal({ isOpen: true, type: 'buckslip', idx: 2 })
-                    }
-                  />
-                </div>
-                <div
-                  className={`transition-all duration-700 delay-200 ${
-                    step >= 3 ? 'translate-x-0 opacity-100' : '-translate-x-16 opacity-0'
-                  } ${step >= 4 ? 'translate-x-32 scale-75 opacity-50' : ''}`}
-                >
-                  <LetterReply
-                    onClick={() =>
-                      setPreviewModal({ isOpen: true, type: 'letter', idx: 0 })
-                    }
-                  />
-                </div>
-              </div>
+              )}
 
-              {/* Envelope */}
-              <div className="absolute right-12">
-                <Envelope
-                  open={step < 4}
-                  onClick={() =>
-                    setPreviewModal({ isOpen: true, type: 'envelope', idx: 0 })
-                  }
-                />
+              {/* Container */}
+              <div className="h-full flex items-center justify-center px-12 relative">
+
+                {/* LEFT SIDE - Queue of inserts waiting (fades out when sequence starts) */}
+                <div
+                  className="absolute left-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3 transition-opacity duration-500"
+                  style={{ opacity: step >= 1 ? 0 : 1 }}
+                >
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Queue</h3>
+
+                  <div className="flex flex-col gap-3">
+                    {/* Buckslip 1 */}
+                    <div
+                      className="transition-all duration-600 ease-out"
+                      style={{
+                        opacity: step >= 1 ? 0 : 1,
+                        transform: step >= 1 ? 'translateX(500px)' : 'translateX(0)',
+                        pointerEvents: step >= 1 ? 'none' : 'auto'
+                      }}
+                    >
+                      <Buckslip
+                        idx={0}
+                        title="Buckslip A (8.5×3.5)"
+                        onClick={() =>
+                          setPreviewModal({ isOpen: true, type: 'buckslip', idx: 0 })
+                        }
+                      />
+                    </div>
+
+                    {/* Buckslip 2 */}
+                    <div
+                      className="transition-all duration-600 ease-out"
+                      style={{
+                        opacity: step >= 1 ? 0 : 1,
+                        transform: step >= 1 ? 'translateX(500px)' : 'translateX(0)',
+                        transitionDelay: step >= 1 ? '100ms' : '0ms',
+                        pointerEvents: step >= 1 ? 'none' : 'auto'
+                      }}
+                    >
+                      <Buckslip
+                        idx={1}
+                        title="Buckslip B (8.5×3.5)"
+                        onClick={() =>
+                          setPreviewModal({ isOpen: true, type: 'buckslip', idx: 1 })
+                        }
+                      />
+                    </div>
+
+                    {/* Buckslip 3 */}
+                    <div
+                      className="transition-all duration-600 ease-out"
+                      style={{
+                        opacity: step >= 1 ? 0 : 1,
+                        transform: step >= 1 ? 'translateX(500px)' : 'translateX(0)',
+                        transitionDelay: step >= 1 ? '200ms' : '0ms',
+                        pointerEvents: step >= 1 ? 'none' : 'auto'
+                      }}
+                    >
+                      <Buckslip
+                        idx={2}
+                        title="Buckslip C (8.5×3.5)"
+                        onClick={() =>
+                          setPreviewModal({ isOpen: true, type: 'buckslip', idx: 2 })
+                        }
+                      />
+                    </div>
+
+                    {/* Letter */}
+                    <div
+                      className="transition-all duration-600 ease-out"
+                      style={{
+                        opacity: step >= 2 ? 0 : 1,
+                        transform: step >= 2 ? 'translateX(500px)' : 'translateX(0)',
+                        pointerEvents: step >= 2 ? 'none' : 'auto'
+                      }}
+                    >
+                      <LetterReply
+                        onClick={() =>
+                          setPreviewModal({ isOpen: true, type: 'letter', idx: 0 })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* CENTER - Envelope (zooms in when sequence starts) */}
+                <div className="flex flex-col items-center gap-4">
+                  <h3
+                    className="text-sm font-semibold text-gray-600 mb-2 transition-opacity duration-500"
+                    style={{ opacity: step >= 1 ? 0 : 1 }}
+                  >
+                    {step >= 4 ? 'SEALED - Ready to Mail' : step >= 3 ? 'Sealing...' : '#10 Envelope'}
+                  </h3>
+
+                  <div className="relative">
+                    <Envelope
+                      open={step < 3}
+                      hasInserts={step >= 1}
+                      onClick={() =>
+                        setPreviewModal({ isOpen: true, type: 'envelope', idx: 0 })
+                      }
+                    >
+                      {/* Inserts stacked inside envelope */}
+                      <div className="relative w-full h-full flex items-center justify-center">
+
+                        {/* Buckslip 1 */}
+                        <div
+                          className="absolute"
+                          style={{
+                            transform: step >= 1 && step < 4 ? 'translateX(0) scale(2.0)' : 'translateX(-500px) scale(2.0)',
+                            opacity: step >= 1 && step < 4 ? 1 : 0,
+                            transition: 'all 1200ms ease-out'
+                          }}
+                        >
+                          <Buckslip
+                            idx={0}
+                            title="Buckslip A"
+                            onClick={() =>
+                              setPreviewModal({ isOpen: true, type: 'buckslip', idx: 0 })
+                            }
+                          />
+                        </div>
+
+                        {/* Buckslip 2 */}
+                        <div
+                          className="absolute"
+                          style={{
+                            transform: step >= 1 && step < 4 ? 'translateX(0) translateY(-10px) scale(2.0)' : 'translateX(-500px) scale(2.0)',
+                            opacity: step >= 1 && step < 4 ? 1 : 0,
+                            transition: 'all 1200ms ease-out',
+                            transitionDelay: step >= 1 ? '800ms' : '0ms'
+                          }}
+                        >
+                          <Buckslip
+                            idx={1}
+                            title="Buckslip B"
+                            onClick={() =>
+                              setPreviewModal({ isOpen: true, type: 'buckslip', idx: 1 })
+                            }
+                          />
+                        </div>
+
+                        {/* Buckslip 3 */}
+                        <div
+                          className="absolute"
+                          style={{
+                            transform: step >= 1 && step < 4 ? 'translateX(0) translateY(-20px) scale(2.0)' : 'translateX(-500px) scale(2.0)',
+                            opacity: step >= 1 && step < 4 ? 1 : 0,
+                            transition: 'all 1200ms ease-out',
+                            transitionDelay: step >= 1 ? '1600ms' : '0ms'
+                          }}
+                        >
+                          <Buckslip
+                            idx={2}
+                            title="Buckslip C"
+                            onClick={() =>
+                              setPreviewModal({ isOpen: true, type: 'buckslip', idx: 2 })
+                            }
+                          />
+                        </div>
+
+                        {/* Tri-Folded Letter */}
+                        <div
+                          className="absolute"
+                          style={{
+                            transform: step >= 2 && step < 4 ? 'translateX(0) translateY(-30px) scale(2.0)' : 'translateX(-500px) scale(2.0)',
+                            opacity: step >= 2 && step < 4 ? 1 : 0,
+                            transition: 'all 1500ms ease-out'
+                          }}
+                        >
+                          <LetterReply
+                            folded={true}
+                            onClick={() =>
+                              setPreviewModal({ isOpen: true, type: 'letter', idx: 0 })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </Envelope>
+
+                    {/* SEALED indicator with mint green success state - overlays at bottom */}
+                    {step >= 4 && (
+                      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-emerald-100 text-emerald-700 text-base font-semibold px-6 py-2 rounded-full ring-2 ring-emerald-300 shadow-lg z-40">
+                        SEALED
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -223,7 +358,7 @@ export function Proofing() {
                     onClick={() => setStep(i)}
                     className={`rounded-full px-4 py-2 text-sm transition ${
                       i === step
-                        ? 'bg-sky-500/20 text-sky-300 ring-1 ring-sky-400/30'
+                        ? 'bg-slate-600/30 text-slate-200 ring-1 ring-slate-500/40'
                         : 'bg-white/5 text-white/70 hover:bg-white/10'
                     }`}
                   >
@@ -238,10 +373,132 @@ export function Proofing() {
                 ))}
               </div>
 
-              <p className="text-xs text-white/50">
-                Click steps to preview the inserting animation. The envelope
-                closes when all inserts are staged.
+              <p className="text-sm text-white/50">
+                Click steps to preview the inserting animation. Watch as pieces slide from the queue into the envelope, then seal when complete.
               </p>
+            </div>
+          </Card>
+
+          {/* Static Proof Gallery */}
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold text-white mb-6">
+              Proof Gallery
+            </h2>
+
+            {/* Buckslips Section */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Buckslips (Front & Back)
+              </h3>
+              <p className="text-base text-white/50 mb-4">
+                8.5" × 3.5" - 100# Gloss Text, 4/4, AQ Coating Each Side
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[0, 1, 2].map((idx) => (
+                  <div key={idx} className="space-y-2">
+                    {/* Front */}
+                    <div
+                      onClick={() =>
+                        setPreviewModal({ isOpen: true, type: 'buckslip', idx })
+                      }
+                      className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
+                    >
+                      <p className="text-base font-medium text-white mb-2">
+                        Buckslip {idx + 1} - Front
+                      </p>
+                      <div className="aspect-[2.43/1] bg-white rounded overflow-hidden">
+                        <img
+                          src={`/ABT-8.5x3.5-${idx + 1}.png`}
+                          alt={`Buckslip ${idx + 1} Front`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    {/* Back */}
+                    <div
+                      onClick={() =>
+                        setPreviewModal({ isOpen: true, type: 'buckslip', idx })
+                      }
+                      className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
+                    >
+                      <p className="text-base font-medium text-white mb-2">
+                        Buckslip {idx + 1} - Back
+                      </p>
+                      <div className="aspect-[2.43/1] bg-white rounded overflow-hidden">
+                        <img
+                          src={`/ABT-8.5x3.5-${idx + 1}.png`}
+                          alt={`Buckslip ${idx + 1} Back`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Letter Samples Section */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Letter Reply Samples
+              </h3>
+              <p className="text-base text-white/50 mb-4">
+                8.5" × 14" - 70# Uncoated Opaque Text, 4/4 (10 personalized samples)
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {mockSamples.map((sample, idx) => (
+                  <div
+                    key={sample.id}
+                    onClick={() => {
+                      setSelectedSample(idx);
+                      setPreviewModal({ isOpen: true, type: 'letter', idx: 0 });
+                    }}
+                    className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
+                  >
+                    <p className="text-base font-medium text-white mb-2">
+                      {sample.name}
+                    </p>
+                    <div className="aspect-[8.5/14] bg-white rounded overflow-hidden mb-2">
+                      <img
+                        src="/ABT-8.5x14.png"
+                        alt={`Letter Sample ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-sm text-white/60">{sample.recipient}</p>
+                    <p className="text-sm text-white/40 truncate">{sample.address.split('\n')[0]}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Envelope Section */}
+            <div>
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Outer Envelope
+              </h3>
+              <p className="text-base text-white/50 mb-4">
+                #10 Envelope - 24# White Wove 4/0 (single-sided)
+              </p>
+              <div className="max-w-2xl">
+                <div
+                  onClick={() =>
+                    setPreviewModal({ isOpen: true, type: 'envelope', idx: 0 })
+                  }
+                  className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
+                >
+                  <p className="text-base font-medium text-white mb-2">
+                    Envelope - Front
+                  </p>
+                  <div className="aspect-[2.3/1] bg-white rounded overflow-hidden">
+                    <img
+                      src="/ABT-No10.png"
+                      alt="Envelope"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
 
@@ -249,8 +506,8 @@ export function Proofing() {
           <Card className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h3 className="text-white font-semibold">Ready to approve?</h3>
-                <p className="text-white/60 text-sm mt-1">
+                <h3 className="text-lg text-white font-semibold">Ready to approve?</h3>
+                <p className="text-base text-white/60 mt-1">
                   Review all samples and the inserting sequence before approving
                 </p>
               </div>
@@ -285,7 +542,7 @@ export function Proofing() {
             ? `Buckslip ${(previewModal.idx ?? 0) + 1} Preview`
             : previewModal.type === 'letter'
             ? 'Letter Reply Preview'
-            : 'Outer Envelope Preview'
+            : '#10 Envelope Preview'
         }
         onApprove={() => {
           alert('Piece approved!');
@@ -293,19 +550,22 @@ export function Proofing() {
         }}
       >
         {previewModal.type === 'buckslip' && previewModal.idx !== undefined && (
-          <div className="scale-[3]">
-            <Buckslip idx={previewModal.idx} title={`Buckslip ${previewModal.idx + 1}`} />
-          </div>
+          <FullFilePreview
+            fileName={`ABT-8.5x3.5-${previewModal.idx + 1}`}
+            className="h-full"
+          />
         )}
         {previewModal.type === 'letter' && (
-          <div className="scale-[4]">
-            <LetterReply />
-          </div>
+          <FullFilePreview
+            fileName="ABT-8.5x14"
+            className="h-full"
+          />
         )}
         {previewModal.type === 'envelope' && (
-          <div className="scale-[3]">
-            <Envelope open={false} />
-          </div>
+          <FullFilePreview
+            fileName="ABT-No10"
+            className="h-full"
+          />
         )}
       </PreviewModal>
     </div>

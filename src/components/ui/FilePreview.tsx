@@ -88,68 +88,42 @@ interface FullFilePreviewProps {
 
 export function FullFilePreview({ fileName, className = '' }: FullFilePreviewProps) {
   const [error, setError] = useState(false);
-  const [isPng, setIsPng] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
 
-  // Try PDF first for full preview (better quality), fallback to PNG
   const handleError = () => {
-    if (!isPng) {
-      setIsPng(true);
-      setError(false);
-      setLoading(false);
-    } else {
-      setError(true);
-      setLoading(false);
-    }
+    setError(true);
+    setLoaded(true);
   };
 
   const handleLoad = () => {
-    setLoading(false);
+    setLoaded(true);
   };
-
-  if (loading) {
-    return (
-      <div className={`flex items-center justify-center bg-white/5 border border-white/10 rounded-xl p-12 ${className}`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-400 mx-auto mb-4"></div>
-          <p className="text-white/60 text-sm">Loading document...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
       <div className={`flex items-center justify-center bg-white/5 border border-white/10 rounded-xl p-12 ${className}`}>
         <p className="text-white/40">
-          {fileName}.png/.pdf not found
+          {fileName}.png not found
         </p>
       </div>
     );
   }
 
-  if (isPng) {
-    return (
-      <div className={`w-full h-full flex items-center justify-center ${className}`}>
-        <img
-          src={`/${fileName}.png`}
-          alt={fileName}
-          className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      </div>
-    );
-  }
-
-  // Full PDF viewer with proper scrolling and quality
+  // Show PNG image directly (fastest loading)
   return (
-    <div className={`w-full h-full ${className}`}>
-      <iframe
-        src={`/${fileName}.pdf#view=FitH`}
-        type="application/pdf"
-        className="w-full h-full rounded-xl border-0 bg-white shadow-2xl"
-        title={fileName}
+    <div className={`w-full h-full flex items-center justify-center bg-black ${className}`}>
+      {!loaded && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-400 mx-auto mb-4"></div>
+            <p className="text-white/60 text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      <img
+        src={`/${fileName}.png`}
+        alt={fileName}
+        className={`max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={handleLoad}
         onError={handleError}
       />

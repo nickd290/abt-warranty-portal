@@ -5,67 +5,46 @@ interface BuckslipProps {
 }
 
 export function Buckslip({ idx, title, onClick }: BuckslipProps) {
-  const designs = [
-    {
-      bg: 'bg-gradient-to-r from-sky-500 to-blue-600',
-      pattern: 'Extended Warranty Protection',
-      subtext: 'Protect Your Investment',
-      accent: 'bg-sky-300',
-    },
-    {
-      bg: 'bg-gradient-to-r from-blue-600 to-indigo-600',
-      pattern: 'Premium Service Plans',
-      subtext: '24/7 Expert Support',
-      accent: 'bg-blue-300',
-    },
-    {
-      bg: 'bg-gradient-to-r from-indigo-600 to-purple-600',
-      pattern: 'Exclusive Member Benefits',
-      subtext: 'Save More Today',
-      accent: 'bg-indigo-300',
-    },
+  const imageFiles = [
+    '/ABT-8.5x3.5-1.png',
+    '/ABT-8.5x3.5-2.png',
+    '/ABT-8.5x3.5-3.png',
   ];
 
-  const design = designs[idx % 3];
+  const imageSrc = imageFiles[idx % 3];
 
+  // Buckslip dimensions: 8.5" × 3.5" = 2.43:1 ratio (fits inside #10 envelope)
+  // Specs: 100# Gloss Text, 4/4, AQ Coating Each Side
   return (
     <div
       onClick={onClick}
-      className={`relative h-[52px] w-[126px] ${design.bg} rounded-lg shadow-xl cursor-pointer hover:scale-105 transition-transform duration-200 overflow-hidden group`}
+      className="relative w-[200px] h-[82px] rounded-sm shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200 overflow-hidden group ring-1 ring-gray-300 bg-white"
       aria-label={`${title} ${idx + 1}`}
       style={{ aspectRatio: '2.43 / 1' }}
+      title="8.5×3.5 - 100# Gloss Text, 4/4, AQ Coating Each Side"
     >
-      {/* Decorative pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-2 right-2 w-20 h-20 rounded-full bg-white blur-2xl" />
-        <div className="absolute bottom-2 left-2 w-16 h-16 rounded-full bg-white blur-xl" />
-      </div>
-
-      {/* Content */}
-      <div className="relative h-full flex flex-col justify-between p-2">
-        <div>
-          <div className="flex items-center gap-1 mb-1">
-            <img
-              src="/Abt-Electronics.png"
-              alt="Abt Electronics"
-              className="h-3 w-auto"
-            />
-          </div>
-          <h3 className="text-[9px] font-bold text-white leading-tight">
-            {design.pattern}
-          </h3>
-        </div>
-        <div>
-          <p className="text-[7px] text-white/80">{design.subtext}</p>
-          <div className={`mt-1 h-0.5 w-8 ${design.accent} rounded-full`} />
-        </div>
-      </div>
+      {/* Actual artwork image */}
+      <img
+        src={imageSrc}
+        alt={title}
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={(e) => {
+          console.error(`Failed to load buckslip image: ${imageSrc}`);
+          e.currentTarget.style.display = 'none';
+        }}
+        onLoad={() => console.log(`Loaded buckslip image: ${imageSrc}`)}
+      />
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-        <span className="text-[8px] font-semibold text-white bg-black/30 px-2 py-0.5 rounded-full">
-          Click to preview
-        </span>
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <div className="text-center">
+          <span className="text-xs font-semibold text-white bg-black/60 px-2 py-1 rounded-full block mb-1">
+            Click to preview
+          </span>
+          <span className="text-[10px] font-medium text-white bg-black/60 px-2 py-0.5 rounded-full block">
+            100# Gloss Text, 4/4, AQ Coating
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -73,56 +52,86 @@ export function Buckslip({ idx, title, onClick }: BuckslipProps) {
 
 interface LetterReplyProps {
   onClick?: () => void;
+  folded?: boolean;
 }
 
-export function LetterReply({ onClick }: LetterReplyProps) {
+export function LetterReply({ onClick, folded = false }: LetterReplyProps) {
+  if (folded) {
+    // Tri-folded letter: 8.5" × 3.67" (fits in #10 envelope)
+    // Specs: 8.5x14 - 70# Uncoated Opaque Text, 4/4
+    return (
+      <div
+        onClick={onClick}
+        className="relative w-[200px] h-[86px] rounded-sm shadow-lg ring-1 ring-gray-300 cursor-pointer hover:scale-105 transition-transform duration-200 overflow-hidden group bg-white"
+        style={{ aspectRatio: '8.5 / 3.67' }}
+        title="8.5×14 - 70# Uncoated Opaque Text, 4/4"
+      >
+        {/* Folded letter appearance - show top third of letter */}
+        <div className="absolute inset-0">
+          <img
+            src="/ABT-8.5x14.png"
+            alt="Tri-Folded Letter"
+            className="absolute w-full h-[300%] object-cover"
+            style={{ top: '0%' }}
+            onError={(e) => {
+              console.error('Failed to load tri-folded letter image: /ABT-8.5x14.png');
+              e.currentTarget.style.display = 'none';
+            }}
+            onLoad={() => console.log('Loaded tri-folded letter image: /ABT-8.5x14.png')}
+          />
+        </div>
+
+        {/* Fold lines to show it's folded */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-0 right-0 h-[1px] bg-gray-400/30" />
+          <div className="absolute top-2/3 left-0 right-0 h-[1px] bg-gray-400/30" />
+        </div>
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="text-center px-1">
+            <span className="text-xs font-semibold text-white bg-black/60 px-2 py-1 rounded-full shadow block mb-1">
+              Click to preview
+            </span>
+            <span className="text-[10px] font-medium text-white bg-black/60 px-2 py-0.5 rounded-full block">
+              8.5×14 - 70# Uncoated Opaque Text, 4/4
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Full unfolded letter (for queue display)
   return (
     <div
       onClick={onClick}
-      className="relative h-[85px] w-[66px] rounded-lg bg-white shadow-2xl ring-1 ring-black/10 cursor-pointer hover:scale-105 transition-transform duration-200 overflow-hidden group"
+      className="relative h-[85px] w-[66px] rounded-lg shadow-2xl ring-1 ring-gray-300 cursor-pointer hover:scale-105 transition-transform duration-200 overflow-hidden group bg-white"
       style={{ aspectRatio: '8.5 / 11' }}
+      title="8.5×14 - 70# Uncoated Opaque Text, 4/4"
     >
-      {/* ABT Logo and Header */}
-      <div className="p-1.5 border-b border-gray-200">
-        <div className="flex items-center gap-1">
-          <img
-            src="/Abt-Electronics.png"
-            alt="Abt Electronics"
-            className="h-4 w-auto"
-          />
-          <div className="text-[5px] text-gray-500">Since 1936</div>
-        </div>
-      </div>
-
-      {/* Letter Content */}
-      <div className="p-1.5 space-y-1">
-        <div className="text-[5px] text-gray-600 space-y-0.5">
-          <p className="font-semibold">Dear Valued Customer,</p>
-          <p>
-            Thank you for your recent purchase. We're writing to remind you
-            about your warranty coverage...
-          </p>
-        </div>
-
-        {/* Mock text lines */}
-        <div className="space-y-0.5">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-0.5 bg-gray-200 rounded" />
-          ))}
-        </div>
-
-        {/* Signature area */}
-        <div className="pt-1 mt-1 border-t border-gray-100">
-          <div className="h-1 w-8 bg-gray-300 rounded mb-0.5" />
-          <div className="text-[4px] text-gray-500">Customer Service Team</div>
-        </div>
-      </div>
+      {/* Actual artwork image */}
+      <img
+        src="/ABT-8.5x14.png"
+        alt="Letter Reply"
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={(e) => {
+          console.error('Failed to load unfolded letter image: /ABT-8.5x14.png');
+          e.currentTarget.style.display = 'none';
+        }}
+        onLoad={() => console.log('Loaded unfolded letter image: /ABT-8.5x14.png')}
+      />
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-        <span className="text-[8px] font-semibold text-gray-800 bg-white/80 px-2 py-0.5 rounded-full shadow">
-          Click to preview
-        </span>
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <div className="text-center">
+          <span className="text-xs font-semibold text-white bg-black/60 px-2 py-1 rounded-full shadow block mb-1">
+            Click to preview
+          </span>
+          <span className="text-[10px] font-medium text-white bg-black/60 px-2 py-0.5 rounded-full block">
+            8.5×14 - 70# Uncoated Opaque Text, 4/4
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -131,68 +140,60 @@ export function LetterReply({ onClick }: LetterReplyProps) {
 interface EnvelopeProps {
   open?: boolean;
   onClick?: () => void;
+  children?: React.ReactNode;
+  hasInserts?: boolean;
+  recipientName?: string;
+  recipientAddress?: string;
 }
 
-export function Envelope({ open = true, onClick }: EnvelopeProps) {
+export function Envelope({ open = true, onClick, children, hasInserts = false, recipientName, recipientAddress }: EnvelopeProps) {
+  // #10 Envelope - Full-screen focal point using actual ABT envelope artwork
+  // Specs: #10 on 24# White Wove 4/0
   return (
     <div
       onClick={onClick}
-      className="relative h-[52px] w-[100px] cursor-pointer hover:scale-105 transition-transform duration-200 group"
+      className="relative w-full h-full cursor-pointer group"
+      style={{ aspectRatio: '2.3 / 1', maxHeight: '100%', margin: 'auto' }}
+      title="#10 on 24# White Wove 4/0"
     >
-      {/* #10 Envelope body */}
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 shadow-2xl border border-slate-300" />
-
-      {/* ABT Logo and Return Address */}
-      <div className="absolute top-1.5 left-2 z-10">
-        <div className="flex items-center gap-1 mb-0.5">
-          <img
-            src="/Abt-Electronics.png"
-            alt="Abt Electronics"
-            className="h-2.5 w-auto"
-          />
-        </div>
-        <div className="text-[4px] text-gray-600 leading-tight">
-          <div>1200 N Milwaukee Ave</div>
-          <div>Glenview, IL 60025</div>
-        </div>
+      {/* Actual envelope artwork - solid focal point */}
+      <div className="absolute inset-0 bg-white shadow-2xl">
+        <img
+          src="/ABT-No10.png"
+          alt="#10 Envelope"
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            console.error('Failed to load envelope image: /ABT-No10.png');
+          }}
+          onLoad={() => console.log('Loaded envelope image: /ABT-No10.png')}
+        />
       </div>
 
-      {/* Stamp area */}
-      <div className="absolute top-1.5 right-2 w-4 h-3 border-2 border-dashed border-gray-400 rounded-sm flex items-center justify-center">
-        <span className="text-[5px] text-gray-500 font-bold">STAMP</span>
-      </div>
-
-      {/* Envelope flap with animation */}
-      <div
-        className={`absolute left-0 right-0 mx-auto top-0 transition-transform duration-700 origin-top ${
-          open ? '' : 'rotate-x-180'
-        }`}
-        style={{
-          width: '88%',
-          height: 0,
-          borderLeft: '18px solid transparent',
-          borderRight: '18px solid transparent',
-          borderTop: `30px solid ${open ? '#e2e8f0' : '#cbd5e1'}`,
-          transformStyle: 'preserve-3d',
-        }}
-      />
-
-      {/* Address window (showing through) */}
-      {!open && (
-        <div className="absolute bottom-3 right-4 left-4 bg-white/40 rounded p-1 border border-slate-300">
-          <div className="text-[4px] text-gray-600 leading-tight">
-            <div className="font-semibold">John Doe</div>
-            <div>123 Main Street</div>
-            <div>Chicago, IL 60601</div>
+      {/* Recipient Address - overlaid on envelope */}
+      {recipientName && recipientAddress && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-gray-800 font-serif bg-white px-8 py-4 rounded shadow-sm" style={{ marginTop: '8%', marginLeft: '10%', minWidth: '200px', minHeight: '80px' }}>
+            <div className="text-sm font-semibold">{recipientName}</div>
+            <div className="text-xs whitespace-pre-line">{recipientAddress}</div>
           </div>
         </div>
       )}
 
+      {/* Inserts container - animates INTO envelope */}
+      <div className="absolute inset-0 flex items-center justify-center overflow-visible">
+        {children}
+      </div>
+
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-xl">
-        <span className="text-[8px] font-semibold text-gray-800 bg-white/80 px-2 py-0.5 rounded-full shadow">
-          Click to preview
-        </span>
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 z-30 pointer-events-none">
+        <div className="text-center pointer-events-auto">
+          <span className="text-base font-semibold text-white bg-black/60 px-4 py-2 rounded-full shadow block mb-2">
+            Click to preview
+          </span>
+          <span className="text-sm font-medium text-white bg-black/60 px-4 py-1.5 rounded-full shadow block">
+            #10 on 24# White Wove 4/0
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -202,7 +203,7 @@ export function SequenceDot({ active }: { active: boolean }) {
   return (
     <div
       className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-        active ? 'bg-sky-400 scale-110' : 'bg-white/25 scale-100'
+        active ? 'bg-slate-600 scale-110' : 'bg-white/25 scale-100'
       }`}
     />
   );
