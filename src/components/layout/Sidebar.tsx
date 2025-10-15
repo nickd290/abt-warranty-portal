@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { Package, FileText } from 'lucide-react';
+import { Package, FileText, Server } from 'lucide-react';
 
 const navigation = [
   { name: 'Campaigns', href: '/campaigns', icon: Package },
   { name: 'Invoices', href: '/invoices', icon: FileText },
+  { name: 'SFTP Upload', href: '/sftp', icon: Server },
 ];
 
 interface SidebarProps {

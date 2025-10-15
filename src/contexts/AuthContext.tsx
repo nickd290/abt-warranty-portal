@@ -1,8 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api';
 
 interface User {
+  id: string;
   email: string;
   name: string;
+  role: string;
 }
 
 interface AuthContextType {
@@ -10,39 +13,53 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('abt-user');
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+      // Verify token is still valid
+      api.getMe()
+        .then((userData) => {
+          setUser(userData);
+        })
+        .catch(() => {
+          // Token expired or invalid
+          setUser(null);
+          localStorage.removeItem('user');
+          localStorage.removeItem('auth_token');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Demo authentication - replace with real API call
-    // For demo: any email ending in @abtelectronics.com with password "abt123"
-    if (email.endsWith('@abtelectronics.com') && password === 'abt123') {
-      const newUser = {
-        email,
-        name: email.split('@')[0],
-      };
-      setUser(newUser);
-      localStorage.setItem('abt-user', JSON.stringify(newUser));
+    try {
+      const data = await api.login(email, password);
+      setUser(data.user);
       return true;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
+    api.logout();
     setUser(null);
-    localStorage.removeItem('abt-user');
   };
 
   return (
@@ -52,6 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         isAuthenticated: !!user,
+        isLoading,
       }}
     >
       {children}

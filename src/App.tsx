@@ -9,6 +9,7 @@ import { Upload } from './pages/Upload';
 import { Proofing } from './pages/Proofing';
 import { Invoicing } from './pages/Invoicing';
 import { Settings } from './pages/Settings';
+import { SftpManagement } from './pages/SftpManagement';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="proofing/:jobId" element={<Proofing />} />
             <Route path="invoices/:jobId" element={<Invoicing />} />
             <Route path="invoices" element={<Invoicing />} />
+            <Route path="sftp" element={<SftpManagement />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<Navigate to="/campaigns" replace />} />

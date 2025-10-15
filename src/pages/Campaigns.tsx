@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useJobStore } from '../store/useJobStore';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { CampaignModal } from '../components/campaigns/CampaignModal';
@@ -7,9 +7,13 @@ import { Plus, Package } from 'lucide-react';
 import type { Job } from '../types';
 
 export function Campaigns() {
-  const jobs = useJobStore((state) => state.jobs);
+  const { jobs, fetchJobs, isLoading } = useJobStore();
   const [selectedCampaign, setSelectedCampaign] = useState<Job | null>(null);
   const [showNewCampaignModal, setShowNewCampaignModal] = useState(false);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
 
   const handleCreateCampaign = () => {
     setShowNewCampaignModal(true);
