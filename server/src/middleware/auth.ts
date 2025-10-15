@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { config } from '../config/index.js';
 import { PrismaClient } from '@prisma/client';
 
@@ -15,8 +15,8 @@ export interface AuthRequest extends Request {
 
 export function generateToken(payload: { id: string; email: string; role: string }): string {
   return jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn,
-  });
+    expiresIn: config.jwt.expiresIn as string | number,
+  } as SignOptions);
 }
 
 export function verifyToken(token: string): any {

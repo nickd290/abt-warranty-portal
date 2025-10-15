@@ -1,17 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import ssh2 from 'ssh2';
+import { Server as SshServer } from 'ssh2';
 import { PrismaClient } from '@prisma/client';
 import { comparePassword } from '../utils/crypto.js';
 import { config } from '../config/index.js';
 import logger from '../utils/logger.js';
 
-const { Server: SshServer } = ssh2;
-
 const prisma = new PrismaClient();
 
 export class SftpServer {
-  private server: SshServer;
+  private server: InstanceType<typeof SshServer>;
   private uploadDir: string;
   private userDirectories: Map<string, string> = new Map();
 
