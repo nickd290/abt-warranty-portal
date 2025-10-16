@@ -34,31 +34,6 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
       campaignName,
       month,
       year,
-      status: 'draft',
-      buckslip1: buckslip1 ? {
-        id: `file-${Date.now()}-1`,
-        name: buckslip1.name,
-        url: URL.createObjectURL(buckslip1),
-        uploadedAt: new Date(),
-      } : undefined,
-      buckslip2: buckslip2 ? {
-        id: `file-${Date.now()}-2`,
-        name: buckslip2.name,
-        url: URL.createObjectURL(buckslip2),
-        uploadedAt: new Date(),
-      } : undefined,
-      buckslip3: buckslip3 ? {
-        id: `file-${Date.now()}-3`,
-        name: buckslip3.name,
-        url: URL.createObjectURL(buckslip3),
-        uploadedAt: new Date(),
-      } : undefined,
-      letterReply: letterReply ? {
-        id: `file-${Date.now()}-4`,
-        name: letterReply.name,
-        url: URL.createObjectURL(letterReply),
-        uploadedAt: new Date(),
-      } : undefined,
     });
 
     // Reset form

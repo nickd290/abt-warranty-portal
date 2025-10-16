@@ -53,13 +53,10 @@ export function Upload() {
     if (isNew) {
       createJob({
         ...formData,
-        status: 'draft',
-        ...files,
       });
     } else if (jobId) {
       updateJob(jobId, {
         ...formData,
-        ...files,
       });
     }
     navigate('/');
@@ -72,14 +69,11 @@ export function Upload() {
       const newJobId = `job-${Date.now()}`;
       createJob({
         ...formData,
-        status: 'proofing',
-        ...files,
       });
       currentJobId = newJobId;
     } else if (jobId) {
       updateJob(jobId, {
         ...formData,
-        ...files,
       });
       updateJobStatus(jobId, 'proofing');
     }

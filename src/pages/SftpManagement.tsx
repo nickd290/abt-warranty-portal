@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Key, Plus, Trash2, Eye, EyeOff, Copy, CheckCircle2, Server } from 'lucide-react';
+import { Key, Plus, Trash2, Copy, CheckCircle2, Server } from 'lucide-react';
 import { api } from '../services/api';
 
 interface SftpCredential {
@@ -20,7 +20,6 @@ export function SftpManagement() {
   const [showNewForm, setShowNewForm] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({});
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const sftpHost = import.meta.env.VITE_SFTP_HOST || 'localhost';

@@ -7,7 +7,7 @@ import { Plus, Package } from 'lucide-react';
 import type { Job } from '../types';
 
 export function Campaigns() {
-  const { jobs, fetchJobs, isLoading } = useJobStore();
+  const { jobs, fetchJobs } = useJobStore();
   const [selectedCampaign, setSelectedCampaign] = useState<Job | null>(null);
   const [showNewCampaignModal, setShowNewCampaignModal] = useState(false);
 
