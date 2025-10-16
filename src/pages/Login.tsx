@@ -21,7 +21,7 @@ export function Login() {
     if (success) {
       navigate('/');
     } else {
-      setError('Invalid credentials. Use an @abtelectronics.com email and password "abt123"');
+      setError('Invalid credentials. Please check your email and password.');
       setLoading(false);
     }
   };
@@ -91,7 +91,7 @@ export function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@abtelectronics.com"
+                    placeholder="admin@abtwarranty.com"
                     required
                     className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/30 focus:border-sky-400/50 focus:outline-none focus:ring-2 focus:ring-sky-400/20 transition"
                   />
@@ -130,10 +130,10 @@ export function Login() {
                     Demo credentials:
                   </p>
                   <p className="text-xs text-white/70 text-center mt-1">
-                    Email: <span className="text-sky-400">admin@abtelectronics.com</span>
+                    Email: <span className="text-sky-400">admin@abtwarranty.com</span>
                   </p>
                   <p className="text-xs text-white/70 text-center">
-                    Password: <span className="text-sky-400">abt123</span>
+                    Password: <span className="text-sky-400">admin123</span>
                   </p>
                 </div>
               </form>
