@@ -89,9 +89,9 @@ export function Invoicing() {
                   </div>
                   <Chip
                     tone={
-                      displayJob.status === 'complete'
+                      displayJob.status === 'COMPLETE'
                         ? 'good'
-                        : displayJob.status === 'invoiced'
+                        : displayJob.status === 'INVOICED'
                         ? 'warn'
                         : 'muted'
                     }
@@ -114,25 +114,25 @@ export function Invoicing() {
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        {displayJob.status === 'complete' ? (
+                        {displayJob.status === 'COMPLETE' ? (
                           <CheckCircle className="h-4 w-4 text-emerald-400" />
                         ) : (
                           <Clock className="h-4 w-4 text-amber-400" />
                         )}
                         <span className="text-sm text-white/70">
-                          {displayJob.status === 'complete'
+                          {displayJob.status === 'COMPLETE'
                             ? 'Printing completed'
                             : 'Printing in progress'}
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        {displayJob.status === 'complete' ? (
+                        {displayJob.status === 'COMPLETE' ? (
                           <CheckCircle className="h-4 w-4 text-emerald-400" />
                         ) : (
                           <Clock className="h-4 w-4 text-white/20" />
                         )}
                         <span className="text-sm text-white/70">
-                          {displayJob.status === 'complete'
+                          {displayJob.status === 'COMPLETE'
                             ? 'Mailed to recipients'
                             : 'Awaiting mail delivery'}
                         </span>

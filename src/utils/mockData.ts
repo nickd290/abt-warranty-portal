@@ -6,7 +6,7 @@ export const mockJobs: Job[] = [
     month: 'October',
     year: 2025,
     campaignName: 'Q4 Warranty Push',
-    status: 'complete',
+    status: 'COMPLETE',
     createdAt: new Date('2025-09-15'),
     updatedAt: new Date('2025-10-01'),
     buckslip1: {
@@ -53,7 +53,7 @@ export const mockJobs: Job[] = [
     month: 'November',
     year: 2025,
     campaignName: 'Holiday Warranty Campaign',
-    status: 'proofing',
+    status: 'PROOFING',
     createdAt: new Date('2025-10-01'),
     updatedAt: new Date('2025-10-05'),
     buckslip1: {
@@ -100,7 +100,7 @@ export const mockJobs: Job[] = [
     month: 'December',
     year: 2025,
     campaignName: 'Year-End Warranty Reminder',
-    status: 'draft',
+    status: 'DRAFT',
     createdAt: new Date('2025-10-06'),
     updatedAt: new Date('2025-10-06'),
     mailCount: 4800,

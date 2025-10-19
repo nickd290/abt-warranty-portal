@@ -50,14 +50,14 @@ export function Proofing() {
 
   const handleApprove = () => {
     if (jobId) {
-      updateJobStatus(jobId, 'approved');
+      updateJobStatus(jobId, 'APPROVED');
       navigate(`/invoices/${jobId}`);
     }
   };
 
   const handleRequestChanges = () => {
     if (jobId) {
-      updateJobStatus(jobId, 'assets-uploaded');
+      updateJobStatus(jobId, 'ASSETS_UPLOADED');
       navigate(`/upload/${jobId}`);
     }
   };

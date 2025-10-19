@@ -1,11 +1,11 @@
 export type JobStatus =
-  | 'draft'
-  | 'assets-uploaded'
-  | 'proofing'
-  | 'approved'
-  | 'printing'
-  | 'invoiced'
-  | 'complete';
+  | 'DRAFT'
+  | 'ASSETS_UPLOADED'
+  | 'PROOFING'
+  | 'APPROVED'
+  | 'PRINTING'
+  | 'INVOICED'
+  | 'COMPLETE';
 
 export interface UploadedFile {
   id: string;

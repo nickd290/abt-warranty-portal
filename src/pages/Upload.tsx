@@ -75,7 +75,7 @@ export function Upload() {
       updateJob(jobId, {
         ...formData,
       });
-      updateJobStatus(jobId, 'proofing');
+      updateJobStatus(jobId, 'PROOFING');
     }
 
     navigate(`/proofs/${currentJobId || 'new'}`);
@@ -99,7 +99,7 @@ export function Upload() {
             </p>
           </div>
           {existingJob && (
-            <Chip tone={existingJob.status === 'draft' ? 'muted' : 'warn'}>
+            <Chip tone={existingJob.status === 'DRAFT' ? 'muted' : 'warn'}>
               {existingJob.status}
             </Chip>
           )}

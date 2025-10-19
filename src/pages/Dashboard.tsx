@@ -36,26 +36,26 @@ export function Dashboard() {
   const stats = {
     total: jobs.length,
     inProgress: jobs.filter((j) =>
-      ['draft', 'assets-uploaded', 'proofing'].includes(j.status)
+      ['DRAFT', 'ASSETS_UPLOADED', 'PROOFING'].includes(j.status)
     ).length,
-    completed: jobs.filter((j) => j.status === 'complete').length,
+    completed: jobs.filter((j) => j.status === 'COMPLETE').length,
   };
 
   const getChipTone = (status: string) => {
-    if (status === 'complete') return 'good';
-    if (status === 'proofing') return 'warn';
+    if (status === 'COMPLETE') return 'good';
+    if (status === 'PROOFING') return 'warn';
     return 'muted';
   };
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      draft: 'Draft',
-      'assets-uploaded': 'Assets Uploaded',
-      proofing: 'Proofing',
-      approved: 'Approved',
-      printing: 'Printing',
-      invoiced: 'Invoiced',
-      complete: 'Complete',
+      DRAFT: 'Draft',
+      ASSETS_UPLOADED: 'Assets Uploaded',
+      PROOFING: 'Proofing',
+      APPROVED: 'Approved',
+      PRINTING: 'Printing',
+      INVOICED: 'Invoiced',
+      COMPLETE: 'Complete',
     };
     return labels[status] || status;
   };
