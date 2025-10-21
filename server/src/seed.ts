@@ -8,6 +8,21 @@ async function seed() {
   try {
     logger.info('🌱 Starting database seed...');
 
+    // Check if database is already seeded
+    const existingInvoices = await prisma.invoice.count();
+    if (existingInvoices > 0) {
+      logger.info('✅ Database already seeded, skipping...');
+      logger.info('📝 Login Credentials:');
+      logger.info('Admin: admin@abtwarranty.com / admin123');
+      logger.info('Staff: staff@abtwarranty.com / staff123');
+      logger.info('Client: client@abtelectronics.com / client123');
+      logger.info('\n🔐 SFTP Credentials:');
+      logger.info('Username: abt_uploads');
+      logger.info('Password: abt_sftp_2024');
+      logger.info(`Host: localhost:2222\n`);
+      return;
+    }
+
     // Create admin user
     const adminPassword = await hashPassword('admin123');
     const admin = await prisma.user.upsert({
