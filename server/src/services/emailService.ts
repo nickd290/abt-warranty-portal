@@ -296,10 +296,14 @@ export class EmailService {
       return;
     }
 
-    // Send to noreply and CC all recipients so everyone can see who received it
+    // Use verified sender as "to" and CC all other recipients
+    // This avoids SendGrid duplicate email error and uses verified sender
+    const recipientEmails = recipients.map(r => r.email);
+    const ccRecipients = recipientEmails.filter(email => email !== this.fromEmail);
+
     const message: any = {
-      to: this.fromEmail, // Send to noreply address
-      cc: recipients.map(r => r.email), // CC all recipients
+      to: this.fromEmail, // Use verified sender as "to"
+      cc: ccRecipients, // CC all other recipients (excluding verified sender)
       from: {
         email: this.fromEmail,
         name: this.fromName,
@@ -314,10 +318,10 @@ export class EmailService {
     // Log detailed message info for debugging
     console.log('📤 Sending email via SendGrid:');
     console.log(`   To: ${message.to}`);
-    console.log(`   CC: ${message.cc.join(', ')}`);
+    console.log(`   CC: ${message.cc.length > 0 ? message.cc.join(', ') : 'none'}`);
     console.log(`   From: ${message.from.name} <${message.from.email}>`);
     console.log(`   Subject: ${message.subject}`);
-    console.log(`   Recipients: ${recipients.length} (all CC'd)`);
+    console.log(`   Total Recipients: ${recipients.length}`);
     console.log(`   Has HTML: ${!!message.html}`);
     console.log(`   Has Text: ${!!message.text}`);
     console.log(`   Has Logo: ${!!message.attachments}`);

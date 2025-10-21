@@ -15,8 +15,9 @@ sgMail.setApiKey(sendgridApiKey);
 const fromEmail = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@abtwarranty.com';
 const fromName = process.env.NOTIFICATION_FROM_NAME || 'ABT Warranty Portal';
 
-// Test email recipients
+// Test email recipients - all will be CC'd
 const testRecipients = [
+  'nicole.wittman@abt.com',
   'nick@jdgraphic.com',
   'ayang@abt.com',
 ];
@@ -281,28 +282,23 @@ async function sendTestEmails() {
     console.log('🚀 Sending test email...');
     console.log(`From: ${fromName} <${fromEmail}>`);
 
-    const [primaryRecipient, ...ccRecipients] = testRecipients;
-    console.log(`To: ${primaryRecipient}`);
-    if (ccRecipients.length > 0) {
-      console.log(`CC: ${ccRecipients.join(', ')}`);
-    }
+    // Use verified sender as "from", remove them from CC to avoid duplicates
+    const ccRecipients = testRecipients.filter(email => email !== fromEmail);
+    console.log(`From/To: ${fromEmail}`);
+    console.log(`CC: ${ccRecipients.join(', ')}`);
     console.log('');
 
     const message: any = {
-      to: primaryRecipient,
+      to: fromEmail, // Use verified sender as "to"
+      cc: ccRecipients, // CC other recipients (excluding from email)
       from: {
         email: fromEmail,
         name: fromName,
       },
-      subject: '🧪 TEST - New File Upload - January 2025 Extended Warranty',
+      subject: '🧪 TEST - New Campaign Created - January 2025 Extended Warranty',
       text: plainTextContent,
       html: htmlContent,
     };
-
-    // Add CC if there are additional recipients
-    if (ccRecipients.length > 0) {
-      message.cc = ccRecipients;
-    }
 
     // Attach the logo as an inline image with CID
     if (logoPath) {
@@ -321,12 +317,12 @@ async function sendTestEmails() {
     await sgMail.send(message);
 
     console.log('✅ Test email sent successfully!');
-    console.log(`\n📧 Check the following inboxes:`);
-    console.log(`   ✉️  To: ${primaryRecipient}`);
-    ccRecipients.forEach(email => {
-      console.log(`   📋 CC: ${email}`);
+    console.log(`\n📧 Check the following inboxes (all CC'd):`);
+    testRecipients.forEach(email => {
+      console.log(`   📋 ${email}`);
     });
     console.log('\n💡 Note: It may take a few minutes for the email to arrive.');
+    console.log('💡 All recipients can see each other in the CC line.');
 
   } catch (error: any) {
     console.error('❌ Error sending test emails:');
