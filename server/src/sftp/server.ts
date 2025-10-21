@@ -4,6 +4,7 @@ import { Server as SshServer } from 'ssh2';
 import { PrismaClient } from '@prisma/client';
 import { comparePassword } from '../utils/crypto.js';
 import { config } from '../config/index.js';
+import { emailService } from '../services/emailService.js';
 import logger from '../utils/logger.js';
 
 const prisma = new PrismaClient();
@@ -12,6 +13,7 @@ export class SftpServer {
   private server: InstanceType<typeof SshServer>;
   private uploadDir: string;
   private userDirectories: Map<string, string> = new Map();
+  private activeUploads: Map<number, { filename: string; username: string; startTime: Date }> = new Map();
 
   constructor() {
     this.server = new SshServer({
@@ -124,6 +126,13 @@ export class SftpServer {
         let handle: number;
         if (flags & 0x0001) { // Write
           handle = fs.openSync(filePath, 'w');
+          // Track this upload
+          this.activeUploads.set(handle, {
+            filename: path.basename(filename),
+            username,
+            startTime: new Date(),
+          });
+          logger.info(`SFTP: Tracking upload for handle ${handle}: ${path.basename(filename)}`);
         } else { // Read
           handle = fs.openSync(filePath, 'r');
         }
@@ -172,13 +181,47 @@ export class SftpServer {
     });
 
     // CLOSE file
-    sftp.on('CLOSE', (reqid: number, handle: Buffer) => {
+    sftp.on('CLOSE', async (reqid: number, handle: Buffer) => {
       const fd = handle.readUInt32BE(0);
       logger.info(`SFTP: CLOSE request - handle ${fd}`);
 
       try {
+        // Check if this was an upload we were tracking
+        const uploadInfo = this.activeUploads.get(fd);
+
         fs.closeSync(fd);
         sftp.status(reqid, 0); // SSH_FX_OK
+
+        // Send email notification for completed upload
+        if (uploadInfo) {
+          this.activeUploads.delete(fd);
+          const filePath = path.join(userDir, uploadInfo.filename);
+
+          try {
+            const stats = fs.statSync(filePath);
+
+            // Get user info from database
+            const credential = await prisma.sftpCredential.findUnique({
+              where: { username: uploadInfo.username },
+              include: {
+                user: {
+                  select: {
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+            });
+
+            if (credential) {
+              logger.info(`SFTP: File upload complete for ${uploadInfo.filename}`);
+              // Email notification will be sent when all files are uploaded for campaign
+              // (Email service integration pending)
+            }
+          } catch (err: any) {
+            logger.error(`SFTP: Error getting file stats or sending notification`, err);
+          }
+        }
       } catch (err) {
         logger.error(`SFTP: Error closing file`, err);
         sftp.status(reqid, 2); // SSH_FX_FAILURE

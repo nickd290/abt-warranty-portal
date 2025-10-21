@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.js';
 import logger from '../utils/logger.js';
+import { emailService } from '../services/emailService.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -60,6 +61,9 @@ export async function uploadFile(req: AuthRequest, res: Response): Promise<void>
     }
 
     logger.info(`File uploaded: ${file.id} for job ${jobId}`);
+
+    // Email notification will be sent when all files are uploaded for campaign
+    // (Email service integration pending)
 
     res.status(201).json({ file });
   } catch (error) {

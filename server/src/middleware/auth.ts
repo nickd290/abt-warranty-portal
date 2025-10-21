@@ -10,6 +10,7 @@ export interface AuthRequest extends Request {
     id: string;
     email: string;
     role: string;
+    name: string;
   };
 }
 
@@ -42,7 +43,7 @@ export async function authenticate(
     // Verify user still exists and is active
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, email: true, role: true, active: true },
+      select: { id: true, email: true, role: true, name: true, active: true },
     });
 
     if (!user || !user.active) {

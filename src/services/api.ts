@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance } from 'axios';
+import { transformJob, transformJobs } from '../utils/transformJob';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -68,22 +69,22 @@ class ApiService {
   // Jobs
   async getJobs() {
     const { data } = await this.client.get('/jobs');
-    return data.jobs;
+    return transformJobs(data.jobs);
   }
 
   async getJob(id: string) {
     const { data } = await this.client.get(`/jobs/${id}`);
-    return data.job;
+    return transformJob(data.job);
   }
 
   async createJob(jobData: { month: string; year: number; campaignName: string }) {
     const { data } = await this.client.post('/jobs', jobData);
-    return data.job;
+    return transformJob(data.job);
   }
 
   async updateJob(id: string, updates: any) {
     const { data } = await this.client.patch(`/jobs/${id}`, updates);
-    return data.job;
+    return transformJob(data.job);
   }
 
   async deleteJob(id: string) {

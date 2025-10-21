@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
-import { X, FileText, Eye, Info, Check, Calendar, Package, Play, RotateCcw } from 'lucide-react';
+import { X, FileText, Eye, Info, Check, Calendar, Package, Play, RotateCcw, Download } from 'lucide-react';
 import type { Job } from '../../types';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Card } from '../ui/Card';
 import { PreviewModal } from '../ui/PreviewModal';
 import { FullFilePreview } from '../ui/FilePreview';
 import { Buckslip, LetterReply, Envelope, SequenceDot } from '../ui/ProofingVisuals';
+import { api } from '../../services/api';
 
 interface CampaignModalProps {
   campaign: Job;
@@ -73,6 +74,23 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
   const resetSequence = () => {
     setStep(0);
     setIsPlaying(false);
+  };
+
+  const handleDownloadFile = async (fileId: string, fileName: string) => {
+    try {
+      const blob = await api.downloadFile(fileId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      alert('Failed to download file. Please try again.');
+    }
   };
 
   const tabs = [
@@ -192,15 +210,26 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-xl border border-white/10 bg-white/5 p-4"
+                        className={`rounded-xl border border-white/10 bg-white/5 p-4 ${
+                          item.file ? 'hover:bg-white/10 cursor-pointer transition' : ''
+                        }`}
+                        onClick={() => item.file && handleDownloadFile(item.file.id, item.file.name)}
                       >
                         <p className="text-base text-white/50 mb-2">{item.label}</p>
                         {item.file ? (
-                          <p className="text-lg text-white truncate">
-                            {item.file.name}
-                          </p>
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-lg text-white truncate">
+                              {item.file.name}
+                            </p>
+                            <Download className="h-5 w-5 text-sky-400 flex-shrink-0" />
+                          </div>
                         ) : (
                           <p className="text-lg text-white/30 italic">Not uploaded</p>
+                        )}
+                        {item.file && (
+                          <p className="text-sm text-white/40 mt-1">
+                            {new Date(item.file.uploadedAt).toLocaleDateString()}
+                          </p>
                         )}
                       </div>
                     ))}

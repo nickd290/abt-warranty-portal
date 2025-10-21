@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { X, Upload, FileText } from 'lucide-react';
+import { X, Upload, FileText, Loader2 } from 'lucide-react';
 import { useJobStore } from '../../store/useJobStore';
+import { api } from '../../services/api';
 
 interface NewCampaignModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ const months = [
 
 export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
   const createJob = useJobStore((state) => state.createJob);
+  const fetchJobs = useJobStore((state) => state.fetchJobs);
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
 
@@ -23,27 +25,60 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
   const [buckslip2, setBuckslip2] = useState<File | null>(null);
   const [buckslip3, setBuckslip3] = useState<File | null>(null);
   const [letterReply, setLetterReply] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUploading(true);
 
-    // Create new campaign
-    const year = currentDate.getFullYear();
+    try {
+      // Create new campaign
+      const year = currentDate.getFullYear();
+      setUploadProgress('Creating campaign...');
 
-    createJob({
-      campaignName,
-      month,
-      year,
-    });
+      const newJob = await createJob({
+        campaignName,
+        month,
+        year,
+      });
 
-    // Reset form
-    setCampaignName('');
-    setMonth(currentMonth);
-    setBuckslip1(null);
-    setBuckslip2(null);
-    setBuckslip3(null);
-    setLetterReply(null);
-    onClose();
+      // Upload files
+      const filesToUpload = [
+        { file: buckslip1, type: 'BUCKSLIP_1', label: 'Buckslip 1' },
+        { file: buckslip2, type: 'BUCKSLIP_2', label: 'Buckslip 2' },
+        { file: buckslip3, type: 'BUCKSLIP_3', label: 'Buckslip 3' },
+        { file: letterReply, type: 'LETTER_REPLY', label: 'Letter Reply' },
+      ];
+
+      for (const { file, type, label } of filesToUpload) {
+        if (file) {
+          setUploadProgress(`Uploading ${label}...`);
+          await api.uploadFile(newJob.id, type, file);
+        }
+      }
+
+      setUploadProgress('Upload complete!');
+
+      // Refresh jobs list to show updated campaign with files
+      await fetchJobs();
+
+      // Reset form
+      setCampaignName('');
+      setMonth(currentMonth);
+      setBuckslip1(null);
+      setBuckslip2(null);
+      setBuckslip3(null);
+      setLetterReply(null);
+      setUploadProgress('');
+      setIsUploading(false);
+
+      onClose();
+    } catch (error) {
+      console.error('Error creating campaign and uploading files:', error);
+      setUploadProgress('Error uploading files. Please try again.');
+      setIsUploading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -214,20 +249,39 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
             </div>
           </div>
 
+          {/* Upload Progress */}
+          {uploadProgress && (
+            <div className="rounded-xl border border-sky-400/30 bg-sky-500/10 px-4 py-3">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 text-sky-400 animate-spin" />
+                <span className="text-sm text-sky-300">{uploadProgress}</span>
+              </div>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition"
+              disabled={isUploading}
+              className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-2xl bg-sky-500/20 px-6 py-3 text-sm font-medium text-sky-300 hover:bg-sky-500/30 transition ring-1 ring-sky-400/30"
+              disabled={isUploading}
+              className="flex-1 rounded-2xl bg-sky-500/20 px-6 py-3 text-sm font-medium text-sky-300 hover:bg-sky-500/30 transition ring-1 ring-sky-400/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Create Campaign
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                'Create Campaign'
+              )}
             </button>
           </div>
         </form>
