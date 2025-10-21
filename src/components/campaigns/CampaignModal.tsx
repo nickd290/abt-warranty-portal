@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { X, FileText, Eye, Info, Check, Calendar, Package, Play, RotateCcw, Download } from 'lucide-react';
+import { X, FileText, Eye, Info, Check, Calendar, Package, Play, RotateCcw } from 'lucide-react';
 import type { Job } from '../../types';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Card } from '../ui/Card';
 import { PreviewModal } from '../ui/PreviewModal';
 import { FullFilePreview } from '../ui/FilePreview';
 import { Buckslip, LetterReply, Envelope, SequenceDot } from '../ui/ProofingVisuals';
-import { api } from '../../services/api';
+import { FileViewerModal } from '../ui/FileViewerModal';
 
 interface CampaignModalProps {
   campaign: Job;
@@ -37,6 +37,11 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
     type: string;
     idx?: number;
   }>({ isOpen: false, type: '' });
+  const [fileViewer, setFileViewer] = useState<{
+    isOpen: boolean;
+    fileId: string;
+    fileName: string;
+  } | null>(null);
 
   const steps = useMemo(
     () => [
@@ -76,21 +81,12 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
     setIsPlaying(false);
   };
 
-  const handleDownloadFile = async (fileId: string, fileName: string) => {
-    try {
-      const blob = await api.downloadFile(fileId);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      alert('Failed to download file. Please try again.');
-    }
+  const handleViewFile = (fileId: string, fileName: string) => {
+    setFileViewer({ isOpen: true, fileId, fileName });
+  };
+
+  const handleCloseFileViewer = () => {
+    setFileViewer(null);
   };
 
   const tabs = [
@@ -213,7 +209,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                         className={`rounded-xl border border-white/10 bg-white/5 p-4 ${
                           item.file ? 'hover:bg-white/10 cursor-pointer transition' : ''
                         }`}
-                        onClick={() => item.file && handleDownloadFile(item.file.id, item.file.name)}
+                        onClick={() => item.file && handleViewFile(item.file.id, item.file.name)}
                       >
                         <p className="text-base text-white/50 mb-2">{item.label}</p>
                         {item.file ? (
@@ -221,7 +217,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                             <p className="text-lg text-white truncate">
                               {item.file.name}
                             </p>
-                            <Download className="h-5 w-5 text-sky-400 flex-shrink-0" />
+                            <Eye className="h-5 w-5 text-sky-400 flex-shrink-0" />
                           </div>
                         ) : (
                           <p className="text-lg text-white/30 italic">Not uploaded</p>
@@ -721,6 +717,16 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
           />
         )}
       </PreviewModal>
+
+      {/* File Viewer Modal */}
+      {fileViewer && (
+        <FileViewerModal
+          isOpen={fileViewer.isOpen}
+          onClose={handleCloseFileViewer}
+          fileId={fileViewer.fileId}
+          fileName={fileViewer.fileName}
+        />
+      )}
     </>
   );
 }

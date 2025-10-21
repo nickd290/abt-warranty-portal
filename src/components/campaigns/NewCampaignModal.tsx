@@ -58,6 +58,11 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
         }
       }
 
+      setUploadProgress('Setting status to proofing...');
+
+      // Update job status to PROOFING after all files uploaded
+      await api.updateJob(newJob.id, { status: 'PROOFING' });
+
       setUploadProgress('Upload complete!');
 
       // Refresh jobs list to show updated campaign with files

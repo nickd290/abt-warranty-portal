@@ -1,0 +1,302 @@
+import sgMail from '@sendgrid/mail';
+import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
+
+// Initialize SendGrid (SAME as working test-email.ts)
+const sendgridApiKey = process.env.SENDGRID_API_KEY;
+if (!sendgridApiKey) {
+  console.error('❌ SENDGRID_API_KEY not found in environment variables');
+  process.exit(1);
+}
+
+sgMail.setApiKey(sendgridApiKey);
+
+const fromEmail = process.env.NOTIFICATION_FROM_EMAIL || 'noreply@abtwarranty.com';
+const fromName = process.env.NOTIFICATION_FROM_NAME || 'ABT Warranty Portal';
+
+// Test email recipients (SAME as working test-email.ts)
+const testRecipients = [
+  'nick@jdgraphic.com',
+  'ayang@abt.com',
+];
+
+// Load ABT Electronics logo
+let logoPath: string | null = null;
+try {
+  const testLogoPath = path.join(process.cwd(), '..', 'public', 'Abt-Electronics.png');
+  if (fs.existsSync(testLogoPath)) {
+    logoPath = testLogoPath;
+    console.log('✅ ABT Electronics logo loaded');
+  } else {
+    console.warn('⚠️  Logo not found - email will not include logo');
+  }
+} catch (error) {
+  console.error('❌ Error loading logo:', error);
+}
+
+// Use NEW email template (Email #1: Campaign Created)
+const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .email-wrapper { width: 100%; background-color: #f5f5f5; padding: 20px 0; }
+    .container { max-width: 600px; margin: 0 auto; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .logo-container {
+      text-align: center;
+      padding: 30px 20px;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .logo-container img { max-width: 280px; height: auto; display: inline-block; }
+    .header {
+      background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+    }
+    .header h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
+    .header p { margin: 8px 0 0; font-size: 14px; opacity: 0.95; }
+    .content { background: white; padding: 30px; }
+    .notification-badge {
+      display: inline-block;
+      background: #f5f5f5;
+      border-left: 4px solid #1a1a1a;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 25px;
+      font-size: 14px;
+      color: #1a1a1a;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    .info-card {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .info-grid {
+      display: table;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .info-row {
+      display: table-row;
+    }
+    .info-row > div {
+      display: table-cell;
+      padding: 10px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .info-row:last-child > div { border-bottom: none; }
+    .info-label {
+      font-weight: 600;
+      color: #6c757d;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: 35%;
+      padding-right: 15px;
+    }
+    .info-value {
+      color: #1a1a1a;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .button {
+      display: inline-block;
+      background: #1a1a1a;
+      color: white;
+      padding: 14px 32px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin: 25px 0 10px;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .button:hover { background: #333333; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); }
+    .footer {
+      text-align: center;
+      color: #6c757d;
+      font-size: 12px;
+      padding: 25px 30px;
+      background: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+    }
+    .footer-logo { color: #1a1a1a; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+    .icon {
+      font-size: 48px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="container">
+      ${logoPath ? `<div class="logo-container">
+        <img src="cid:abt-logo" alt="ABT Electronics" />
+      </div>` : ''}
+
+      <div class="header">
+        <h1>TEST - New Campaign Created</h1>
+        <p>A new warranty mailer campaign has been created</p>
+      </div>
+
+      <div class="content">
+        <div class="notification-badge">
+          <strong>New Campaign:</strong> January 2025 Extended Warranty (TEST)
+        </div>
+
+        <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <div class="icon">✨</div>
+          <p style="margin: 10px 0 0; color: #6c757d; font-size: 13px;">6 art files uploaded</p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-grid">
+            <div class="info-row">
+              <div class="info-label">Campaign Name</div>
+              <div class="info-value">January 2025 Extended Warranty</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Files Uploaded</div>
+              <div class="info-value">6 files</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Created By</div>
+              <div class="info-value">Sarah Designer</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Time</div>
+              <div class="info-value">${new Date().toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+              })}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <a href="http://localhost:5174/campaigns" class="button">View Campaign</a>
+          <p style="margin: 15px 0 0; color: #6c757d; font-size: 13px;">
+            Waiting for data files to begin proofing
+          </p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-logo">ABT ELECTRONICS</div>
+        <p style="margin: 5px 0;">Warranty Mailer Portal</p>
+        <p style="margin: 15px 0 5px; color: #adb5bd;">
+          You're receiving this notification as an admin or staff member
+        </p>
+        <p style="margin: 0; color: #adb5bd;">
+          &copy; ${new Date().getFullYear()} ABT Electronics. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+const plainTextContent = `
+TEST - New Campaign Created - ABT Warranty Portal
+
+Campaign Name: January 2025 Extended Warranty
+Files Uploaded: 6 files
+Created By: Sarah Designer
+Time: ${new Date().toLocaleString()}
+
+View Campaign: http://localhost:5174/campaigns
+
+Status: Waiting for data files to begin proofing
+
+---
+You're receiving this email because you're an admin or staff member at ABT Warranty Portal.
+`;
+
+async function sendTestEmail() {
+  try {
+    console.log('🚀 Sending direct test email with new template...');
+    console.log(`From: ${fromName} <${fromEmail}>`);
+
+    const [primaryRecipient, ...ccRecipients] = testRecipients;
+    console.log(`To: ${primaryRecipient}`);
+    if (ccRecipients.length > 0) {
+      console.log(`CC: ${ccRecipients.join(', ')}`);
+    }
+    console.log('');
+
+    const message: any = {
+      to: primaryRecipient,
+      from: {
+        email: fromEmail,
+        name: fromName,
+      },
+      subject: 'TEST - New Campaign Created - January 2025 Extended Warranty',
+      text: plainTextContent,
+      html: htmlContent,
+    };
+
+    // Add CC if there are additional recipients
+    if (ccRecipients.length > 0) {
+      message.cc = ccRecipients;
+    }
+
+    // Attach the logo as an inline image with CID
+    if (logoPath) {
+      const logoBuffer = fs.readFileSync(logoPath);
+      message.attachments = [
+        {
+          content: logoBuffer.toString('base64'),
+          filename: 'abt-logo.png',
+          type: 'image/png',
+          disposition: 'inline',
+          content_id: 'abt-logo',
+        },
+      ];
+    }
+
+    await sgMail.send(message);
+
+    console.log('✅ Test email sent successfully!');
+    console.log('');
+    console.log('📧 Check the following inboxes:');
+    console.log(`   ✉️  To: ${primaryRecipient}`);
+    ccRecipients.forEach(email => {
+      console.log(`   📋 CC: ${email}`);
+    });
+    console.log('');
+    console.log('💡 Note: It may take a few minutes for the email to arrive.');
+
+  } catch (error: any) {
+    console.error('❌ Error sending test email:');
+    console.error('Message:', error.message);
+    if (error.response) {
+      console.error('Response:', JSON.stringify(error.response.body, null, 2));
+    }
+    process.exit(1);
+  }
+}
+
+sendTestEmail();

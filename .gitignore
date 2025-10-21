@@ -30,3 +30,6 @@ dist-ssr
 *.sw?
 .vercel
 server/prisma/*.db
+packages/db/prisma/packages/
+packages/db/prisma/prisma/
+*.db

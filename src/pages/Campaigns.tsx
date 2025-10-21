@@ -3,13 +3,14 @@ import { useJobStore } from '../store/useJobStore';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { CampaignModal } from '../components/campaigns/CampaignModal';
 import { NewCampaignModal } from '../components/campaigns/NewCampaignModal';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, Trash2 } from 'lucide-react';
 import type { Job } from '../types';
 
 export function Campaigns() {
-  const { jobs, fetchJobs } = useJobStore();
+  const { jobs, fetchJobs, deleteJob } = useJobStore();
   const [selectedCampaign, setSelectedCampaign] = useState<Job | null>(null);
   const [showNewCampaignModal, setShowNewCampaignModal] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchJobs();
@@ -17,6 +18,25 @@ export function Campaigns() {
 
   const handleCreateCampaign = () => {
     setShowNewCampaignModal(true);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, jobId: string) => {
+    e.stopPropagation();
+    setDeleteConfirmId(jobId);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteConfirmId) {
+      await deleteJob(deleteConfirmId);
+      setDeleteConfirmId(null);
+      if (selectedCampaign?.id === deleteConfirmId) {
+        setSelectedCampaign(null);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmId(null);
   };
 
   return (
@@ -103,7 +123,7 @@ export function Campaigns() {
                   {job.mailedAt ? new Date(job.mailedAt).toLocaleDateString() : '-'}
                 </p>
               </div>
-              <div className="col-span-1 flex items-center justify-end">
+              <div className="col-span-1 flex items-center justify-end gap-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -112,6 +132,13 @@ export function Campaigns() {
                   className="text-sm text-sky-400 hover:text-sky-300 opacity-0 group-hover:opacity-100 transition"
                 >
                   View
+                </button>
+                <button
+                  onClick={(e) => handleDeleteClick(e, job.id)}
+                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition"
+                  title="Delete campaign"
+                >
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -142,6 +169,38 @@ export function Campaigns() {
         isOpen={showNewCampaignModal}
         onClose={() => setShowNewCampaignModal(false)}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
+          onClick={handleCancelDelete}
+        >
+          <div
+            className="bg-black rounded-3xl max-w-md w-full ring-1 ring-white/10 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-white mb-4">Delete Campaign?</h3>
+            <p className="text-white/70 mb-6">
+              Are you sure you want to delete this campaign? This action cannot be undone and will delete all associated files.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelDelete}
+                className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 rounded-2xl bg-red-500/20 px-6 py-3 text-sm font-medium text-red-300 hover:bg-red-500/30 transition ring-1 ring-red-400/30"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
