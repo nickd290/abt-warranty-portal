@@ -296,10 +296,10 @@ export class EmailService {
       return;
     }
 
-    const [primaryRecipient, ...ccRecipients] = recipients;
-
+    // Send to noreply and CC all recipients so everyone can see who received it
     const message: any = {
-      to: primaryRecipient.email,
+      to: this.fromEmail, // Send to noreply address
+      cc: recipients.map(r => r.email), // CC all recipients
       from: {
         email: this.fromEmail,
         name: this.fromName,
@@ -309,18 +309,15 @@ export class EmailService {
       html: htmlContent,
     };
 
-    if (ccRecipients.length > 0) {
-      message.cc = ccRecipients.map(r => r.email);
-    }
-
     this.attachLogo(message);
 
     // Log detailed message info for debugging
     console.log('📤 Sending email via SendGrid:');
     console.log(`   To: ${message.to}`);
-    console.log(`   CC: ${message.cc || 'none'}`);
+    console.log(`   CC: ${message.cc.join(', ')}`);
     console.log(`   From: ${message.from.name} <${message.from.email}>`);
     console.log(`   Subject: ${message.subject}`);
+    console.log(`   Recipients: ${recipients.length} (all CC'd)`);
     console.log(`   Has HTML: ${!!message.html}`);
     console.log(`   Has Text: ${!!message.text}`);
     console.log(`   Has Logo: ${!!message.attachments}`);
