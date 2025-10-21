@@ -27,7 +27,13 @@ export const config = {
   },
 
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5000',
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+      : [
+          'http://localhost:5000',
+          'http://localhost:5173',
+          'https://abt-warranty-portal-production-0129.up.railway.app'
+        ],
   },
 
   database: {
