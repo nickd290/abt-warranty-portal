@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.js';
 import logger from '../utils/logger.js';
+import { emailService } from '../services/emailService.js';
 
 const prisma = new PrismaClient();
 
@@ -111,6 +112,9 @@ export async function updateJob(req: AuthRequest, res: Response): Promise<void> 
     // Check if job exists and user has permission
     const existingJob = await prisma.job.findUnique({
       where: { id },
+      include: {
+        files: true,
+      },
     });
 
     if (!existingJob) {
@@ -136,6 +140,24 @@ export async function updateJob(req: AuthRequest, res: Response): Promise<void> 
     });
 
     logger.info(`Job updated: ${job.id}`);
+
+    // Send email when status changes to PROOFING (files uploaded)
+    if (
+      updates.status === 'PROOFING' &&
+      existingJob.status !== 'PROOFING' &&
+      job.files.length > 0
+    ) {
+      emailService.sendCampaignCreatedEmail({
+        campaignName: job.campaignName,
+        campaignId: job.id,
+        filesCount: job.files.length,
+        createdBy: req.user!.name,
+        creatorEmail: req.user!.email,
+      }).catch((err) => {
+        logger.error('Failed to send campaign created email', err);
+        // Don't fail the request if email fails
+      });
+    }
 
     res.json({ job });
   } catch (error) {
