@@ -45,10 +45,10 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
 
       // Upload files
       const filesToUpload = [
-        { file: buckslip1, type: 'BUCKSLIP_1', label: 'Buckslip 1' },
-        { file: buckslip2, type: 'BUCKSLIP_2', label: 'Buckslip 2' },
-        { file: buckslip3, type: 'BUCKSLIP_3', label: 'Buckslip 3' },
-        { file: letterReply, type: 'LETTER_REPLY', label: 'Letter Reply' },
+        { file: buckslip1, type: 'BUCKSLIP_1', label: 'Insert 1' },
+        { file: buckslip2, type: 'BUCKSLIP_2', label: 'Insert 2' },
+        { file: buckslip3, type: 'BUCKSLIP_3', label: 'Insert 3' },
+        { file: letterReply, type: 'LETTER_REPLY', label: 'Warranty Form' },
       ];
 
       for (const { file, type, label } of filesToUpload) {
@@ -156,10 +156,10 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-white">Upload Files</h3>
 
-            {/* Buckslip 1 */}
+            {/* Insert 1 */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">
-                Buckslip 1
+                Insert 1
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 cursor-pointer hover:bg-white/10 transition">
                 <Upload className="h-5 w-5 text-sky-400" />
@@ -176,10 +176,10 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
               </label>
             </div>
 
-            {/* Buckslip 2 */}
+            {/* Insert 2 */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">
-                Buckslip 2
+                Insert 2
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 cursor-pointer hover:bg-white/10 transition">
                 <Upload className="h-5 w-5 text-sky-400" />
@@ -196,10 +196,10 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
               </label>
             </div>
 
-            {/* Buckslip 3 */}
+            {/* Insert 3 */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">
-                Buckslip 3
+                Insert 3
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 cursor-pointer hover:bg-white/10 transition">
                 <Upload className="h-5 w-5 text-sky-400" />
@@ -216,10 +216,10 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
               </label>
             </div>
 
-            {/* Letter Reply */}
+            {/* Warranty Form */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">
-                Letter Reply Content
+                Warranty Form
               </label>
               <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 cursor-pointer hover:bg-white/10 transition">
                 <FileText className="h-5 w-5 text-sky-400" />
