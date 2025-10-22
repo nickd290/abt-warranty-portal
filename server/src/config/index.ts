@@ -23,7 +23,7 @@ export const config = {
 
   upload: {
     dir: process.env.UPLOAD_DIR || './uploads',
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '52428800'), // 50MB
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '104857600'), // 100MB
   },
 
   cors: {

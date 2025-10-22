@@ -231,7 +231,6 @@ export function NewCampaignModal({ isOpen, onClose }: NewCampaignModalProps) {
                   onChange={(e) => setLetterReply(e.target.files?.[0] || null)}
                   accept=".pdf,.png,.jpg,.jpeg"
                   className="hidden"
-                  required
                 />
               </label>
             </div>
