@@ -29,6 +29,7 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+vercel.json
 server/prisma/*.db
 packages/db/prisma/packages/
 packages/db/prisma/prisma/
