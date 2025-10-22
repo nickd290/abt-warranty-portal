@@ -46,7 +46,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
   const steps = useMemo(
     () => [
       { key: 'start', label: 'Start Position' },
-      { key: 'buckslips', label: 'Add Buckslips' },
+      { key: 'buckslips', label: 'Add Inserts' },
       { key: 'letter', label: 'Show Letter' },
       { key: 'fold', label: 'Fold & Insert' },
       { key: 'ready', label: 'Seal & Mail' },
@@ -60,7 +60,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
 
     const timeline = [
       { step: 0, delay: 0 },       // Start Position
-      { step: 1, delay: 1500 },    // Add Buckslips (all 3)
+      { step: 1, delay: 1500 },    // Add Inserts (all 3)
       { step: 2, delay: 6500 },    // Show Letter (full size)
       { step: 3, delay: 9500 },    // Fold & Insert Letter
       { step: 4, delay: 12000 },   // Seal & Ready to Mail
@@ -197,10 +197,10 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { label: 'Buckslip 1', file: campaign.buckslip1 },
-                      { label: 'Buckslip 2', file: campaign.buckslip2 },
-                      { label: 'Buckslip 3', file: campaign.buckslip3 },
-                      { label: 'Letter Reply', file: campaign.letterReply },
+                      { label: 'Insert 1', file: campaign.buckslip1 },
+                      { label: 'Insert 2', file: campaign.buckslip2 },
+                      { label: 'Insert 3', file: campaign.buckslip3 },
+                      { label: 'Warranty Form', file: campaign.letterReply },
                       { label: 'Outer Envelope', file: campaign.outerEnvelope },
                       { label: 'Mail List', file: campaign.mailList },
                     ].map((item) => (
@@ -242,11 +242,11 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                     Mail Piece Specifications
                   </h3>
                   <div className="space-y-6">
-                    {/* Buckslips */}
+                    {/* Inserts */}
                     <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <p className="text-xl font-semibold text-white mb-2">Buckslips</p>
+                          <p className="text-xl font-semibold text-white mb-2">Inserts</p>
                           <p className="text-xl text-white/70">8.5" × 3.5"</p>
                         </div>
                         <div className="text-right">
@@ -260,11 +260,11 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                       </div>
                     </div>
 
-                    {/* Letter Reply */}
+                    {/* Warranty Form */}
                     <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <p className="text-xl font-semibold text-white mb-2">Letter Reply</p>
+                          <p className="text-xl font-semibold text-white mb-2">Warranty Form</p>
                           <p className="text-xl text-white/70">8.5" × 14"</p>
                         </div>
                         <div className="text-right">
@@ -384,7 +384,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                       {step >= 1 && step < 4 && (
                         <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top duration-500">
                           <div className="bg-slate-700/90 text-white text-base font-semibold px-6 py-2 rounded-full shadow-lg">
-                            {step === 1 ? 'Inserting Buckslips...' : step === 2 ? 'Showing Letter...' : 'Folding & Inserting Letter...'}
+                            {step === 1 ? 'Inserting Inserts...' : step === 2 ? 'Showing Letter...' : 'Folding & Inserting Letter...'}
                           </div>
                         </div>
                       )}
@@ -403,7 +403,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                             >
                               {/* Inserts stacked inside envelope */}
                               <div className="relative w-full h-full flex items-center justify-center">
-                                {/* Buckslip 1 */}
+                                {/* Insert 1 */}
                                 <div
                                   className="absolute"
                                   style={{
@@ -415,14 +415,14 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                                 >
                                   <Buckslip
                                     idx={0}
-                                    title="Buckslip A"
+                                    title="Insert A"
                                     onClick={() =>
                                       setPreviewModal({ isOpen: true, type: 'buckslip', idx: 0 })
                                     }
                                   />
                                 </div>
 
-                                {/* Buckslip 2 */}
+                                {/* Insert 2 */}
                                 <div
                                   className="absolute"
                                   style={{
@@ -435,14 +435,14 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                                 >
                                   <Buckslip
                                     idx={1}
-                                    title="Buckslip B"
+                                    title="Insert B"
                                     onClick={() =>
                                       setPreviewModal({ isOpen: true, type: 'buckslip', idx: 1 })
                                     }
                                   />
                                 </div>
 
-                                {/* Buckslip 3 */}
+                                {/* Insert 3 */}
                                 <div
                                   className="absolute"
                                   style={{
@@ -455,7 +455,7 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                                 >
                                   <Buckslip
                                     idx={2}
-                                    title="Buckslip C"
+                                    title="Insert C"
                                     onClick={() =>
                                       setPreviewModal({ isOpen: true, type: 'buckslip', idx: 2 })
                                     }
@@ -557,10 +557,10 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                       Proof Gallery
                     </h2>
 
-                    {/* Buckslips Section */}
+                    {/* Inserts Section */}
                     <div className="mb-8">
                       <h3 className="text-xl font-semibold text-white mb-4">
-                        Buckslips (Front & Back)
+                        Inserts (Front & Back)
                       </h3>
                       <p className="text-base text-white/50 mb-4">
                         8.5" × 3.5" - 100# Gloss Text, 4/4, AQ Coating Each Side
@@ -576,12 +576,12 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                               className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
                             >
                               <p className="text-base font-medium text-white mb-2">
-                                Buckslip {idx + 1} - Front
+                                Insert {idx + 1} - Front
                               </p>
                               <div className="aspect-[2.43/1] bg-white rounded overflow-hidden">
                                 <img
                                   src={`/ABT-8.5x3.5-${idx + 1}.png`}
-                                  alt={`Buckslip ${idx + 1} Front`}
+                                  alt={`Insert ${idx + 1} Front`}
                                   className="w-full h-full object-cover"
                                 />
                               </div>
@@ -594,12 +594,12 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                               className="cursor-pointer rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
                             >
                               <p className="text-base font-medium text-white mb-2">
-                                Buckslip {idx + 1} - Back
+                                Insert {idx + 1} - Back
                               </p>
                               <div className="aspect-[2.43/1] bg-white rounded overflow-hidden">
                                 <img
                                   src={`/ABT-8.5x3.5-${idx + 1}.png`}
-                                  alt={`Buckslip ${idx + 1} Back`}
+                                  alt={`Insert ${idx + 1} Back`}
                                   className="w-full h-full object-cover"
                                 />
                               </div>
@@ -609,10 +609,10 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
                       </div>
                     </div>
 
-                    {/* Letter Samples Section */}
+                    {/* Warranty Form Samples Section */}
                     <div className="mb-8">
                       <h3 className="text-xl font-semibold text-white mb-4">
-                        Letter Reply Samples
+                        Warranty Form Samples
                       </h3>
                       <p className="text-base text-white/50 mb-4">
                         8.5" × 14" - 70# Uncoated Opaque Text, 4/4 (10 personalized samples)
@@ -688,9 +688,9 @@ export function CampaignModal({ campaign, onClose }: CampaignModalProps) {
         onClose={() => setPreviewModal({ isOpen: false, type: '' })}
         title={
           previewModal.type === 'buckslip'
-            ? `Buckslip ${(previewModal.idx ?? 0) + 1} Preview`
+            ? `Insert ${(previewModal.idx ?? 0) + 1} Preview`
             : previewModal.type === 'letter'
-            ? 'Letter Reply Preview'
+            ? 'Warranty Form Preview'
             : '#10 Envelope Preview'
         }
         onApprove={() => {
